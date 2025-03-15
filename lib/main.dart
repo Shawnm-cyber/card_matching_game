@@ -7,6 +7,14 @@ void main() {
   runApp(const MyApp());
 }
 
+class CardModel { // Initial card matching game setup
+  final String identifier;
+  bool isFaceUp;
+  bool isMatched;
+
+  CardModel({required this.identifier, this.isFaceUp = false, this.isMatched = false});
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
