@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
-
 void main() {
   runApp(CardMatchingGame());
 }
@@ -28,9 +27,12 @@ class GameProvider extends ChangeNotifier { // Initial card matching game setup
     List<String> identifiers = ['🍎', '🍎', '🚀', '🚀', '🌟', '🌟', '🎸', '🎸'];
     identifiers.shuffle();
     cards = identifiers.map((id) => CardModel(identifier: id)).toList();
+    firstCard = null;
+    secondCard = null;
     notifyListeners();
   }
-  void flipCard(int index) { //  Implement card flipping logic and UI
+  
+  void flipCard(int index, BuildContext context) { // Implement card flipping logic and UI
     if (cards[index].isMatched || cards[index].isFaceUp) return;
 
     cards[index].isFaceUp = true;
@@ -39,39 +41,40 @@ class GameProvider extends ChangeNotifier { // Initial card matching game setup
       firstCard = cards[index];
     } else {
       secondCard = cards[index];
-      _checkMatch(); //  Implement matching logic and card matching visual feedback
+      _checkMatch(context); // Implement matching logic and card matching visual feedback
     }
     notifyListeners();
   }
 
-  void _checkMatch() { //  Implement matching logic and card matching visual feedback
+  void _checkMatch(BuildContext context) { // Implement matching logic and card matching visual feedback
     if (firstCard != null && secondCard != null) {
       if (firstCard!.identifier == secondCard!.identifier) {
         firstCard!.isMatched = true;
         secondCard!.isMatched = true;
-     
-      // Check for win condition
-        if (cards.every((card) => card.isMatched)) { // Add win condition and dialog
-          _showWinDialog(); //  Add win condition and dialog
-        }
 
+        // Check for win condition
+        if (cards.every((card) => card.isMatched)) { // Add win condition and dialog
+          Future.delayed(Duration(milliseconds: 300), () {
+            _showWinDialog(context); // Add win condition and dialog
+          });
+        }
       } else {
         Timer(Duration(seconds: 1), () { // Implement matching logic and card matching visual feedback
           firstCard!.isFaceUp = false;
           secondCard!.isFaceUp = false;
-          firstCard = null;
-          secondCard = null;
           notifyListeners();
         });
       }
       firstCard = null;
       secondCard = null;
+      notifyListeners();
     }
   }
-  void _showWinDialog() { // Add win condition and dialog
+
+  void _showWinDialog(BuildContext context) { // Add win condition and dialog
     showDialog(
-      context: Provider.of<BuildContext>(context, listen: false),
-      builder: (BuildContext context) {
+      context: context,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text('Congratulations!'),
           content: Text('You matched all the cards!'),
@@ -79,7 +82,7 @@ class GameProvider extends ChangeNotifier { // Initial card matching game setup
             TextButton(
               child: Text('Restart'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
                 _initializeGame();
               },
             ),
@@ -97,7 +100,7 @@ class CardMatchingGame extends StatelessWidget { // Initial card matching game s
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(title: Text('Card Matching Game')),
-        body: ChangeNotifierProvider( //  Add state management with Provider
+        body: ChangeNotifierProvider( // Add state management with Provider
           create: (context) => GameProvider(),
           child: GameBoard(),
         ),
@@ -125,7 +128,7 @@ class GameBoard extends StatelessWidget {
           itemBuilder: (context, index) {
             return GestureDetector(
               // Implement card flipping logic and UI
-              onTap: () => game.flipCard(index),
+              onTap: () => game.flipCard(index, context),
               child: AnimatedContainer(
                 // Implement card flipping logic and UI
                 duration: Duration(milliseconds: 500),
@@ -150,4 +153,3 @@ class GameBoard extends StatelessWidget {
     );
   }
 }
-// Tested and Implemented
