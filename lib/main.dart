@@ -49,8 +49,44 @@ class GameProvider extends ChangeNotifier { // Initial card matching game setup
       if (firstCard!.identifier == secondCard!.identifier) {
         firstCard!.isMatched = true;
         secondCard!.isMatched = true;
+     
+      // Check for win condition
+        if (cards.every((card) => card.isMatched)) { // Add win condition and dialog
+          _showWinDialog(); //  Add win condition and dialog
+        }
+
+      } else {
+        Timer(Duration(seconds: 1), () { // Implement matching logic and card matching visual feedback
+          firstCard!.isFaceUp = false;
+          secondCard!.isFaceUp = false;
+          firstCard = null;
+          secondCard = null;
+          notifyListeners();
+        });
       }
-      }
+      firstCard = null;
+      secondCard = null;
+    }
+  }
+  void _showWinDialog() { // Add win condition and dialog
+    showDialog(
+      context: Provider.of<BuildContext>(context, listen: false),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Congratulations!'),
+          content: Text('You matched all the cards!'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Restart'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _initializeGame();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 class MyApp extends StatelessWidget {
