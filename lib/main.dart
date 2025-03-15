@@ -15,6 +15,22 @@ class CardModel { // Initial card matching game setup
   CardModel({required this.identifier, this.isFaceUp = false, this.isMatched = false});
 }
 
+class GameProvider extends ChangeNotifier { // Initial card matching game setup
+  List<CardModel> cards = [];
+  CardModel? firstCard;
+  CardModel? secondCard;
+
+  GameProvider() {
+    _initializeGame();
+  }
+
+  void _initializeGame() { // Initial card matching game setup
+    List<String> identifiers = ['🍎', '🍎', '🚀', '🚀', '🌟', '🌟', '🎸', '🎸'];
+    identifiers.shuffle();
+    cards = identifiers.map((id) => CardModel(identifier: id)).toList();
+    notifyListeners();
+  }
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
