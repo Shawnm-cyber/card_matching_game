@@ -30,6 +30,28 @@ class GameProvider extends ChangeNotifier { // Initial card matching game setup
     cards = identifiers.map((id) => CardModel(identifier: id)).toList();
     notifyListeners();
   }
+  void flipCard(int index) { //  Implement card flipping logic and UI
+    if (cards[index].isMatched || cards[index].isFaceUp) return;
+
+    cards[index].isFaceUp = true;
+
+    if (firstCard == null) {
+      firstCard = cards[index];
+    } else {
+      secondCard = cards[index];
+      _checkMatch(); //  Implement matching logic and card matching visual feedback
+    }
+    notifyListeners();
+  }
+
+  void _checkMatch() { //  Implement matching logic and card matching visual feedback
+    if (firstCard != null && secondCard != null) {
+      if (firstCard!.identifier == secondCard!.identifier) {
+        firstCard!.isMatched = true;
+        secondCard!.isMatched = true;
+      }
+      }
+  }
 }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
